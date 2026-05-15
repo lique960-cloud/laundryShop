@@ -1,0 +1,21 @@
+# Database configuration
+/database/config.php
+
+# PHP logs
+*.log
+
+# Windows thumbnails
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# OS X files
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# XAMPP/Temp files
+tmp/
+temp/
