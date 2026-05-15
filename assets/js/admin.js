@@ -332,6 +332,18 @@ $(document).on('click', '#confirm-yes', function(event) {
 				data: { id: id }
 			}));
 		});
+	}else if(confirmType == 'delete-inventory'){
+		var selectedInvIds = $('#table-inventory input[type=checkbox]:checked').map(function() {
+			return $(this).val();
+		}).get();
+		selectedInvIds.forEach(function(id) {
+			requests.push($.ajax({
+				url: 'data/delete_inventory.php',
+				type: 'post',
+				dataType: 'json',
+				data: { id: id }
+			}));
+		});
 	}
 
 	if(requests.length > 0){
@@ -373,6 +385,13 @@ $(document).on('click', '#confirm-yes', function(event) {
 				all_laundry();
 				if(typeof loadSale === 'function'){
 					loadSale();
+				}
+			} else if(confirmType == 'delete-inventory'){
+				$('#modal-confirm').modal('hide');
+				$('#modal-msg').find('#msg-body').text('Inventory item(s) deleted successfully!');
+				$('#modal-msg').modal('show');
+				if(typeof all_inventory === 'function'){
+					all_inventory();
 				}
 			}
 		});
