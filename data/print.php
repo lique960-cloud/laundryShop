@@ -1,21 +1,32 @@
 <?php 
-require_once('../class/Sales.php');
-if(isset($_GET['date'])){
-	$date = $_GET['date'];
-	$ids = isset($_GET['ids']) ? trim($_GET['ids']) : '';
+require_once('../database/Database.php');
+$db = new Database();
 
-	if($ids !== ''){
-		$idList = array_filter(array_map('intval', explode(',', $ids)), function($id){ return $id > 0; });
-		if(count($idList) > 0){
-			$placeholders = implode(',', array_fill(0, count($idList), '?'));
-			$sql = "SELECT * FROM sales WHERE sale_id IN ($placeholders) ORDER BY sale_date_paid DESC";
-			$reports = $sales->getRows($sql, $idList);
-		} else {
-			$reports = $sales->daily_sales($date);
-		}
-	} else {
-		$reports = $sales->daily_sales($date);
-	}
+if(isset($_GET['date'])){
+    $date = $_GET['date'];
+    $ids = isset($_GET['ids']) ? trim($_GET['ids']) : '';
+
+    if($ids !== ''){
+        $idList = array_filter(array_map('intval', explode(',', $ids)), function($id){ return $id > 0; });
+        if(count($idList) > 0){
+            $placeholders = implode(',', array_fill(0, count($idList), '?'));
+            $sql = "SELECT * FROM product_sales WHERE sale_id IN ($placeholders) ORDER BY sale_date DESC";
+            $reports = $db->getRows($sql, $idList);
+        } else {
+            if(empty($date)){
+                $reports = $db->getRows("SELECT * FROM product_sales ORDER BY sale_date DESC");
+            } else {
+                $reports = $db->getRows("SELECT * FROM product_sales WHERE DATE(sale_date) = ? ORDER BY sale_date DESC", [$date]);
+            }
+        }
+    } else {
+        if(empty($date)){
+            $reports = $db->getRows("SELECT * FROM product_sales ORDER BY sale_date DESC");
+        } else {
+            $reports = $db->getRows("SELECT * FROM product_sales WHERE DATE(sale_date) = ? ORDER BY sale_date DESC", [$date]);
+        }
+    }
+    $db->Disconnect();
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +34,7 @@ if(isset($_GET['date'])){
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Daily Sales Report — <?= $date; ?></title>
+    <title>Sales Report — <?= empty($date) ? 'All Time' : $date; ?></title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -122,18 +133,18 @@ if(isset($_GET['date'])){
   <body>
 
   <div class="report-header">
-    <h1>🧺 Laundry Shop</h1>
-    <div class="subtitle"><?= empty($date) ? 'Full Sales Report' : 'Daily Sales Report'; ?></div>
+    <h1>📦 HypeLaundry</h1>
+    <div class="subtitle"><?= empty($date) ? 'Complete Sales Report' : 'Daily Sales Report'; ?></div>
     <div class="date"><?= empty($date) ? 'All Recorded Transactions' : $date; ?></div>
   </div>
 
   <table>
     <thead>
       <tr>
-        <th>Customer Name</th>
-        <th class="text-center">Type</th>
-        <th class="text-center">Laundry Received</th>
-        <th class="text-center">Date Paid</th>
+        <th>Reference</th>
+        <th>Customer</th>
+        <th class="text-center">Payment</th>
+        <th class="text-center">Date</th>
         <th class="text-right">Amount</th>
       </tr>
     </thead>
@@ -141,14 +152,14 @@ if(isset($_GET['date'])){
       <?php 
         $total = 0;
         foreach($reports as $r): 
-        $total += $r['sale_amount'];
+        $total += $r['sale_total'];
       ?>
       <tr>
-        <td><?= $r['sale_customer_name']; ?></td>
-        <td class="text-center"><?= $r['sale_type_desc']; ?></td>
-        <td class="text-center"><?= $r['sale_laundry_received']; ?></td>
-        <td class="text-center"><?= $r['sale_date_paid']; ?></td>
-        <td class="text-right amount"><?= '₱ '.number_format($r['sale_amount'], 2); ?></td>
+        <td style="font-family:monospace;"><?= $r['sale_reference']; ?></td>
+        <td><?= htmlspecialchars($r['sale_customer_name']); ?></td>
+        <td class="text-center"><?= $r['sale_payment_method']; ?></td>
+        <td class="text-center"><?= date('M d, Y h:i A', strtotime($r['sale_date'])); ?></td>
+        <td class="text-right amount"><?= '₱ '.number_format($r['sale_total'], 2); ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
@@ -161,7 +172,7 @@ if(isset($_GET['date'])){
   </table>
 
   <div class="report-footer">
-    <p>Generated on <?= date('F j, Y g:i A'); ?> &bull; Laundry Shop Management System</p>
+    <p>Generated on <?= date('F j, Y g:i A'); ?> &bull; HypeLaundry Sales & Inventory System</p>
   </div>
 
   <script type="text/javascript">

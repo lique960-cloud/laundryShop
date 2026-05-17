@@ -39,8 +39,8 @@ $dailySalesData = $db->getRows("SELECT DATE(sale_date) as sale_day, COALESCE(SUM
     GROUP BY DATE(sale_date) 
     ORDER BY sale_day ASC");
 
-$userName = isset($_SESSION['user_fullname']) ? $_SESSION['user_fullname'] : 'Administrator';
-$userRole = isset($_SESSION['user_role']) ? ucfirst($_SESSION['user_role']) : 'Admin';
+$userName = isset($_SESSION['user_fullname']) ? $_SESSION['user_fullname'] : 'Cashier';
+$userRole = isset($_SESSION['user_role']) ? ucfirst($_SESSION['user_role']) : 'Cashier';
 
 $db->Disconnect();
 ?>
@@ -49,8 +49,8 @@ $db->Disconnect();
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Dashboard — HypeLaundry Sales & Inventory</title>
-    <meta name="description" content="HypeLaundry Sales & Inventory Management Dashboard - Comprehensive Overview">
+    <title>Cashier Dashboard — HypeLaundry</title>
+    <meta name="description" content="HypeLaundry Cashier Dashboard">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap-theme.min.css">
@@ -153,7 +153,7 @@ $db->Disconnect();
     <div class="wrapper">
 
       <header class="main-header">
-        <a href="home.php" class="logo">
+        <a href="cashier_home.php" class="logo">
           <span class="logo-mini"><b>H</b>L</span>
           <span class="logo-lg">📦 <b>Hype</b>Laundry</span>
         </a>
@@ -181,7 +181,7 @@ $db->Disconnect();
           <div class="hero-section">
             <div class="hero-content">
               <h1>Good Day, <?= htmlspecialchars($userRole); ?>!</h1>
-              <p>Here's what's happening with HypeLaundry today. You have <span style="color:#818cf8; font-weight:600;"><?= $lowStockCount['cnt']; ?> low stock alerts</span> that need your attention.</p>
+              <p>Welcome to your dashboard. You can process sales and view inventory here.</p>
             </div>
             <div style="position:absolute; bottom:20px; right:30px;">
               <span style="background:rgba(99,102,241,0.2); color:#818cf8; padding:6px 15px; border-radius:20px; font-size:12px; font-weight:700; border:1px solid rgba(99,102,241,0.3);">
@@ -303,17 +303,7 @@ $db->Disconnect();
                   <h3 class="box-title"><i class="fa fa-archive" style="margin-right:8px; color:#818cf8;"></i>Inventory Status</h3>
                 </div>
                 <div class="box-body" style="padding:10px 24px !important;">
-                  <div style="margin-bottom:20px;">
-                    <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                      <span style="font-size:13px; color:#94a3b8;">Total Value</span>
-                      <span style="font-size:15px; font-weight:700; color:#f1f5f9;">₱<?= number_format($totalInvValue['total'], 2); ?></span>
-                    </div>
-                    <div style="height:6px; background:rgba(148,163,184,0.1); border-radius:3px; overflow:hidden;">
-                      <div style="height:100%; width:100%; background:linear-gradient(to right, #6366f1, #a78bfa);"></div>
-                    </div>
-                  </div>
-                  
-                  <h4 style="font-size:12px; text-transform:uppercase; color:#64748b; letter-spacing:1px; margin:20px 0 12px; font-weight:700;">Critical Stock</h4>
+                  <h4 style="font-size:12px; text-transform:uppercase; color:#64748b; letter-spacing:1px; margin:10px 0 12px; font-weight:700;">Critical Stock</h4>
                   <?php if(empty($lowStockItems)): ?>
                     <p style="color:#10b981; font-size:13px; font-weight:500;"><i class="fa fa-check-circle" style="margin-right:6px;"></i>All items are in stock</p>
                   <?php else: ?>
@@ -331,7 +321,7 @@ $db->Disconnect();
                       </div>
                     </div>
                     <?php endforeach; ?>
-                    <a href="inventory.php" class="btn btn-default btn-xs btn-block" style="margin-top:10px;">Restock Inventory</a>
+                    <a href="inventory.php" class="btn btn-default btn-xs btn-block" style="margin-top:10px;">View Inventory</a>
                   <?php endif; ?>
                 </div>
               </div>
@@ -407,7 +397,6 @@ $db->Disconnect();
           }]
         },
         options: {
-          responsive: true,
           maintainAspectRatio: false,
           plugins: {
             legend: { display: false },
@@ -447,4 +436,3 @@ $db->Disconnect();
     </script>
   </body>
 </html>
-

@@ -7,6 +7,8 @@ $return = ['valid' => false];
 
 if(isset($_POST['id'])){
     $id = intval($_POST['id']);
+    
+    // Delete sale (sale_items cascade deleted via FK)
     $db->deleteRow("DELETE FROM product_sales WHERE sale_id = ?", [$id]);
     $return['valid'] = true;
 }

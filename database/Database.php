@@ -100,6 +100,14 @@ class Database extends Connection{
 		$this->transaction->commit();
 	}
 
+	public function Rollback(){
+		$this->transaction->rollBack();
+	}
+
+	public function inTransaction(){
+		return $this->transaction->inTransaction();
+	}
+
 	public function test()
 	{
 		echo 'database class test';

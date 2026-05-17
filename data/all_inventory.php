@@ -1,6 +1,7 @@
 <?php 
 require_once('../database/Database.php');
 $db = new Database();
+$userRole = isset($_SESSION['user_role']) ? strtolower($_SESSION['user_role']) : 'admin';
 
 $sql = "SELECT i.*, c.category_name, b.brand_name 
         FROM inventory i 
@@ -12,7 +13,9 @@ $res = $db->getRows($sql);
 <table id="myTable-inventory" class="table table-bordered table-hover">
 	<thead>
 		<tr>
+			<?php if($userRole == 'admin'): ?>
 			<th><center><input type="checkbox" id="check-all-inv"></center></th>
+			<?php endif; ?>
 			<th>Item Name</th>
 			<th>Category</th>
 			<th>Brand</th>
@@ -20,7 +23,9 @@ $res = $db->getRows($sql);
 			<th>Unit</th>
 			<th>Price</th>
 			<th>Status</th>
+			<?php if($userRole == 'admin'): ?>
 			<th><center>Action</center></th>
+			<?php endif; ?>
 		</tr>
 	</thead>
 	<tbody>
@@ -29,7 +34,9 @@ $res = $db->getRows($sql);
 			$statusText = ($r['quantity'] <= $r['low_stock_threshold']) ? '<i class="fa fa-warning"></i> Low Stock' : '<i class="fa fa-check"></i> Sufficient';
 		?>
 			<tr>
+				<?php if($userRole == 'admin'): ?>
 				<td><center><input type="checkbox" value="<?= $r['id']; ?>" class="check-inv"></center></td>
+				<?php endif; ?>
 				<td><?= $r['item_name']; ?></td>
 				<td><span class="badge badge-category"><?= $r['category_name'] ?? 'N/A'; ?></span></td>
 				<td><span class="badge badge-brand"><?= $r['brand_name'] ?? 'N/A'; ?></span></td>
@@ -37,6 +44,7 @@ $res = $db->getRows($sql);
 				<td><?= $r['unit']; ?></td>
 				<td>₱<?= number_format($r['price'], 2); ?></td>
 				<td class="<?= $statusClass; ?>"><?= $statusText; ?></td>
+				<?php if($userRole == 'admin'): ?>
 				<td>
 					<center>
 						<button onclick="editInventory('<?= $r['id']; ?>');" type="button" class="btn btn-warning btn-xs">
@@ -44,6 +52,7 @@ $res = $db->getRows($sql);
 						</button>
 					</center>
 				</td>
+				<?php endif; ?>
 			</tr>
 		<?php endforeach; ?>
 	</tbody>

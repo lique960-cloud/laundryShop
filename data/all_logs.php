@@ -16,6 +16,7 @@ $res = $db->getRows($sql);
 			<th>Quantity</th>
 			<th>Reason/Remarks</th>
 			<th>Date & Time</th>
+			<th style="width:80px;"><center>Action</center></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -28,6 +29,13 @@ $res = $db->getRows($sql);
 				<td><?= number_format($r['quantity'], 2); ?> <?= $r['unit']; ?></td>
 				<td><?= $r['reason']; ?></td>
 				<td><?= date('M d, Y h:i A', strtotime($r['date_created'])); ?></td>
+				<td>
+					<center>
+						<button type="button" class="btn btn-danger btn-xs delete-log" data-id="<?= $r['id']; ?>">
+							<i class="fa fa-trash"></i>
+						</button>
+					</center>
+				</td>
 			</tr>
 		<?php endforeach; ?>
 	</tbody>

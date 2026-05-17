@@ -2,6 +2,12 @@
 require_once('../database/Database.php');
 $db = new Database();
 
+if(!isset($_SESSION['user_role']) || strtolower($_SESSION['user_role']) != 'admin'){
+    echo json_encode(['valid' => false, 'msg' => 'Access denied.']);
+    $db->Disconnect();
+    exit;
+}
+
 if(isset($_POST['item_name'])){
 	$item_name = $_POST['item_name'];
 	$category_id = !empty($_POST['category_id']) ? $_POST['category_id'] : null;

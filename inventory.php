@@ -1,11 +1,13 @@
-<?php require_once('session.php'); ?>
+<?php require_once('session.php'); 
+$userRole = isset($_SESSION['user_role']) ? strtolower($_SESSION['user_role']) : 'admin';
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Inventory Management — HypeLaundry</title>
-    <meta name="description" content="HypeLaundry Inventory Management - Monitor and manage supplies">
+    <meta name="description" content="HypeLaundry Sales & Inventory - Stock Management">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap-theme.min.css">
@@ -17,8 +19,68 @@
     <style>
       .stock-low { color: #f87171; font-weight: bold; }
       .stock-ok { color: #34d399; }
+      .stock-out { color: #ef4444; font-weight: bold; }
       .badge-category { background-color: #818cf8; }
       .badge-brand { background-color: #6366f1; }
+
+      /* Fix DataTables elements for dark theme */
+      .dataTables_wrapper .dataTables_filter input {
+        background-color: #1a2332 !important;
+        color: #f1f5f9 !important;
+        border: 1px solid rgba(148, 163, 184, 0.2) !important;
+        padding: 6px 12px !important;
+        border-radius: 4px !important;
+      }
+      .dataTables_wrapper .dataTables_filter input:focus {
+        border-color: #6366f1 !important;
+        outline: none !important;
+      }
+      
+      /* Completely redesign pagination to be flat and clean */
+      .dataTables_wrapper .dataTables_paginate .paginate_button,
+      .pagination > li > a, 
+      .pagination > li > span {
+        background: transparent !important;
+        color: #94a3b8 !important;
+        border: none !important;
+        padding: 6px 14px !important;
+        margin: 0 2px !important;
+        transition: all 0.3s ease !important;
+        cursor: pointer !important;
+        border-radius: 4px !important;
+      }
+      
+      .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+      .pagination > li > a:hover,
+      .pagination > li > span:hover {
+        background: rgba(99, 102, 241, 0.1) !important;
+        color: #818cf8 !important;
+      }
+      
+      .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+      .pagination > .active > a, 
+      .pagination > .active > span {
+        background: #6366f1 !important;
+        color: #fff !important;
+      }
+      
+      .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+      .pagination > .disabled > a, 
+      .pagination > .disabled > span {
+        color: #475569 !important;
+        cursor: default !important;
+        background: transparent !important;
+        opacity: 0.5 !important;
+      }
+      
+      /* Fix select dropdown */
+      .dataTables_wrapper .dataTables_length select {
+        background-color: #1a2332 !important;
+        color: #f1f5f9 !important;
+        border: 1px solid rgba(148, 163, 184, 0.2) !important;
+        padding: 5px !important;
+        border-radius: 4px !important;
+      }
     </style>
   </head>
   <body class="hold-transition skin-blue sidebar-mini modern-theme">
@@ -27,7 +89,7 @@
       <header class="main-header">
         <a href="home.php" class="logo">
           <span class="logo-mini"><b>H</b>L</span>
-          <span class="logo-lg">🧺 <b>Hype</b>Laundry</span>
+          <span class="logo-lg">📦 <b>Hype</b>Laundry</span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
           <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -58,24 +120,25 @@
         <section class="content">
           <div class="box">
             <div class="box-header with-border">
-              <h3 class="box-title"><i class="fa fa-archive" style="margin-right:8px; color:#818cf8;"></i>Manage Supplies</h3>
+              <h3 class="box-title"><i class="fa fa-archive" style="margin-right:8px; color:#818cf8;"></i>Product Inventory</h3>
               <div class="box-tools pull-right">
                 <button class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
               </div>
             </div>
             <div class="box-body">
+              <?php if($userRole == 'admin'): ?>
               <div class="action-bar">
                 <button id="newItem" type="button" class="btn btn-success btn-sm">
-                  <i class="fa fa-plus" style="margin-right:5px;"></i> New Stock
+                  <i class="fa fa-plus" style="margin-right:5px;"></i> Add Product
                 </button>
                 <button id="delItem" type="button" class="btn btn-danger btn-sm">
                   <i class="fa fa-trash" style="margin-right:5px;"></i> Delete
                 </button>
               </div>
+              <?php endif; ?>
               <div id="table-inventory"></div>
             </div>
             <div class="box-footer">
-              <!-- Footer -->
             </div>
           </div>
 
@@ -84,9 +147,9 @@
 
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <b>Version</b> 3.0
+          <b>Version</b> 4.0
         </div>
-        <strong>Copyright &copy; 2026 <a href="#">HypeLaundry</a>.</strong> All rights reserved.
+        <strong>Copyright &copy; 2026 <a href="#">HypeLaundry</a>.</strong> Sales & Inventory Management System.
       </footer>
 
       <div class="control-sidebar-bg"></div>
@@ -98,7 +161,6 @@
     <?php include_once('modal/confirm.php'); ?>
     <?php include_once('script.php'); ?>
     <script>
-        // Inventory specific logic will be here or in admin.js
         $(document).ready(function() {
             all_inventory();
         });
@@ -120,7 +182,7 @@
         $('#newItem').click(function(event) {
             $('#inv-type').val('insert');
             $('#form-inventory')[0].reset();
-            $('#modal-inventory').find('.modal-title').text('New Inventory Item');
+            $('#modal-inventory').find('.modal-title').text('Add New Product');
             $('#modal-inventory').modal('show');
         });
 
@@ -163,7 +225,7 @@
                     $('#unit').val(data.unit);
                     $('#price').val(data.price);
                     $('#low_stock_threshold').val(data.low_stock_threshold);
-                    $('#modal-inventory').find('.modal-title').text('Edit Inventory Item');
+                    $('#modal-inventory').find('.modal-title').text('Edit Product');
                     $('#modal-inventory').modal('show');
                 }
             });

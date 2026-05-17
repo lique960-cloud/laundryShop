@@ -25,7 +25,7 @@
       <header class="main-header">
         <a href="home.php" class="logo">
           <span class="logo-mini"><b>H</b>L</span>
-          <span class="logo-lg">🧺 <b>Hype</b>Laundry</span>
+          <span class="logo-lg">📦 <b>Hype</b>Laundry</span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
           <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -67,9 +67,9 @@
 
       <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <b>Version</b> 3.0
+          <b>Version</b> 4.0
         </div>
-        <strong>Copyright &copy; 2026 <a href="#">HypeLaundry</a>.</strong> All rights reserved.
+        <strong>Copyright &copy; 2026 <a href="#">HypeLaundry</a>.</strong> Sales & Inventory Management System.
       </footer>
     </div>
 
@@ -91,6 +91,25 @@
                 }
             });
         }
+
+        $(document).on('click', '.delete-log', function(){
+            var id = $(this).data('id');
+            if(confirm('Are you sure you want to delete this log?')){
+                $.ajax({
+                    url: 'data/delete_inventory_log.php',
+                    type: 'post',
+                    dataType: 'json',
+                    data: {id:id},
+                    success: function(data){
+                        if(data.valid){
+                            all_logs();
+                        } else {
+                            alert(data.msg || 'Failed to delete log.');
+                        }
+                    }
+                });
+            }
+        });
     </script>
   </body>
 </html>

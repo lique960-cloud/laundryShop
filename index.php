@@ -5,13 +5,10 @@ $db = new Database();
 if (isset($_SESSION['user_logged'])) {
   header('location: home.php');
   exit;
-} elseif (isset($_SESSION['customer_logged'])) {
-  header('location: customer/order.php');
-  exit;
 }
 
-$remUser = isset($_COOKIE['remember_user']) ? $_COOKIE['remember_user'] : '';
-$remPass = isset($_COOKIE['remember_pass']) ? $_COOKIE['remember_pass'] : '';
+$remUser = isset($_COOKIE['remember_user']) ? $_COOKIE['remember_user'] : 'cashier';
+$remPass = isset($_COOKIE['remember_pass']) ? $_COOKIE['remember_pass'] : 'cashier';
 $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
 ?>
 <!DOCTYPE html>
@@ -21,8 +18,8 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — HypeLaundry</title>
-  <meta name="description" content="Laundry Shop Management System - Secure Login Portal">
+  <title>Login — HypeLaundry Sales & Inventory</title>
+  <meta name="description" content="HypeLaundry Sales & Inventory Management System - Secure Admin Portal">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     *,
@@ -105,6 +102,20 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       color: #cbd5e1;
     }
 
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.15);
+      color: #818cf8;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 12px;
+      letter-spacing: 0.5px;
+    }
+
     .form-group {
       margin-bottom: 20px;
     }
@@ -169,13 +180,6 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       cursor: pointer;
     }
 
-    .remember-row a {
-      font-size: 14px;
-      color: #818cf8;
-      text-decoration: none;
-      font-weight: 600;
-    }
-
     .btn-login {
       width: 100%;
       padding: 16px;
@@ -195,18 +199,6 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       transform: translateY(-1px);
     }
 
-    .create-account-link {
-      text-align: center;
-      font-size: 14px;
-      color: #cbd5e1;
-    }
-
-    .create-account-link a {
-      color: #ffffff;
-      font-weight: 700;
-      text-decoration: none;
-    }
-
     /* ============ RIGHT: BRANDING PANEL ============ */
     .branding-panel {
       flex: 1;
@@ -221,8 +213,6 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       justify-content: center;
       color: #f8fafc;
     }
-
-
 
     .branding-content {
       position: relative;
@@ -241,52 +231,40 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
     }
 
     .branding-content h1 {
-      font-size: 42px;
+      font-size: 38px;
       font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 24px;
+      line-height: 1.15;
+      margin-bottom: 16px;
       letter-spacing: -1.5px;
     }
 
-    .branding-desc {
+    .branding-content h1 span {
+      background: linear-gradient(135deg, #818cf8, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .branding-features {
       display: flex;
-      gap: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 24px;
     }
 
-    .branding-desc .line {
-      width: 2px;
-      background: #f8fafc;
-      flex-shrink: 0;
-    }
-
-    .branding-desc p {
-      font-size: 18px;
-      line-height: 1.6;
-      font-weight: 500;
-      color: #f1f5f9;
-    }
-
-    .btn-top-right {
-      position: absolute;
-      top: 40px;
-      right: 40px;
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #0f172a;
-      text-decoration: none;
-      display: flex;
+    .branding-features .feature-tag {
+      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-
-    .btn-top-right:hover {
-      background: #ffffff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     /* Toast */
@@ -325,10 +303,7 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
         padding: 40px 30px;
       }
       .branding-content h1 {
-        font-size: 30px;
-      }
-      .btn-top-right {
-        display: none;
+        font-size: 26px;
       }
     }
   </style>
@@ -349,13 +324,14 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
 
       <div class="login-header">
         <h2>Welcome Back!</h2>
-        <p>Login to your account</p>
+        <p>Sign in to manage sales & inventory</p>
+        <div class="role-badge">🔒 Admin & Cashier Access Only</div>
       </div>
 
       <form method="post" id="form-login">
         <div class="form-group">
-          <label for="credential">Email</label>
-          <input autofocus type="text" id="credential" name="credential" class="form-input" placeholder="Enter your email" value="<?php echo $remUser; ?>" required>
+          <label for="credential">Username</label>
+          <input autofocus type="text" id="credential" name="credential" class="form-input" placeholder="Enter your username" value="<?php echo $remUser; ?>" required>
         </div>
 
         <div class="form-group">
@@ -371,26 +347,27 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
             <input type="checkbox" name="remember_me" id="remember_me" <?php echo $remCheck; ?>>
             Remember me
           </label>
-          <a href="customer/forgot_password.php">Forgot password?</a>
         </div>
 
         <button type="submit" name="commit" class="btn-login" id="btn-login">Sign In</button>
       </form>
-
-      <div class="create-account-link">
-        <p>New here? <a href="customer/register.php">Create Account</a></p>
-      </div>
     </div>
 
     <!-- RIGHT: BRANDING PANEL -->
     <div class="branding-panel">
-      <a href="#" class="btn-top-right">Get to know us ↗</a>
-      
       <div class="branding-content">
         <img src="dist/img/logobrand.png" alt="Logo" class="logo-large">
-        <h1>Join HypeLaundry now and experience the best laundry service.</h1>
+        <h1>Sales & Inventory <span>Management System</span></h1>
+        <div class="branding-features">
+          <div class="feature-tag">📦 Inventory Tracking</div>
+          <div class="feature-tag">💰 Sales & POS</div>
+          <div class="feature-tag">📊 Reports</div>
+          <div class="feature-tag">🔔 Low Stock Alerts</div>
+          <div class="feature-tag">📋 Audit Logs</div>
+        </div>
       </div>
     </div>
+  </div>
 
   <script src="assets/js/jquery-3.1.1.min.js"></script>
   <script src="assets/js/bootstrap.min.js"></script>

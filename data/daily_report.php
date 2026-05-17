@@ -1,20 +1,22 @@
 <?php 
-require_once('../class/Sales.php');
-if(isset($_POST['date'])){
-	$date = $_POST['date'];
+require_once('../database/Database.php');
+$db = new Database();
 
-	$reports = $sales->daily_sales($date);
-?>
-<?php 
-    $total = 0;
-    foreach($reports as $r) {
-        $total += $r['sale_amount'];
-    }
+$date = isset($_POST['date']) ? $_POST['date'] : '';
+
+if(empty($date)){
+    $reports = $db->getRows("SELECT * FROM product_sales ORDER BY sale_date DESC");
+} else {
+    $reports = $db->getRows("SELECT * FROM product_sales WHERE DATE(sale_date) = ? ORDER BY sale_date DESC", [$date]);
+}
+
+$total = 0;
+foreach($reports as $r) { $total += $r['sale_total']; }
 ?>
 <br />
 <div id="selected-summary" style="margin-bottom:10px; <?= empty($date) ? '' : 'display:none;' ?>">
     <?php if(empty($date)): ?>
-        Viewing: <strong>All Recorded Sales</strong> &middot; Total: <strong style="color:#818cf8;">₱ <?= number_format($total, 2); ?></strong>
+        Viewing: <strong>All Recorded Sales</strong> &middot; Total: <strong style="color:#10b981;">₱ <?= number_format($total, 2); ?></strong>
     <?php else: ?>
         Selected <strong id="selected-count">0</strong> receipt(s) &middot; Total: <strong id="selected-total">₱ 0.00</strong>
     <?php endif; ?>
@@ -24,25 +26,25 @@ if(isset($_POST['date'])){
             <thead>
                 <tr>
                     <th style="width:40px;"><input type="checkbox" id="select-all-report"></th>
+                    <th>Reference</th>
                     <th>Customer Name</th>
-                    <th><center>Type</center></th>
-                    <th><center>Laundry Received</center></th>
-                    <th><center>Date Paid</center></th>
+                    <th><center>Payment</center></th>
+                    <th><center>Date</center></th>
                     <th><center>Amount</center></th>
                     <th style="width:100px;"><center>Action</center></th>
                 </tr>
             </thead>
             <tbody>
             	<?php 
-				foreach($reports as $r): 
+			    foreach($reports as $r): 
 			?>
                 <tr align="center">
-                    <td><input type="checkbox" class="select-report" value="<?= $r['sale_id']; ?>" data-amount="<?= $r['sale_amount']; ?>"></td>
-                    <td align="left" style="font-weight:500;"><?= $r['sale_customer_name']; ?></td>
-                    <td><span style="background:rgba(99,102,241,0.15); color:#818cf8; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;"><?= $r['sale_type_desc']; ?></span></td>
-                    <td style="font-size:12.5px; color:#94a3b8;"><?= $r['sale_laundry_received']; ?></td>
-                    <td style="font-size:12.5px; color:#94a3b8;"><?= $r['sale_date_paid']; ?></td>
-                    <td style="font-weight:600; color:#818cf8;"><?= '₱ '.number_format($r['sale_amount'], 2); ?></td>
+                    <td><input type="checkbox" class="select-report" value="<?= $r['sale_id']; ?>" data-amount="<?= $r['sale_total']; ?>"></td>
+                    <td><span style="font-family:monospace; color:#818cf8; font-weight:600; font-size:12px;"><?= $r['sale_reference']; ?></span></td>
+                    <td align="left" style="font-weight:500;"><?= htmlspecialchars($r['sale_customer_name']); ?></td>
+                    <td><span style="background:rgba(99,102,241,0.15); color:#818cf8; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;"><?= $r['sale_payment_method']; ?></span></td>
+                    <td style="font-size:12.5px; color:#94a3b8;"><?= date('M d, Y h:i A', strtotime($r['sale_date'])); ?></td>
+                    <td style="font-weight:600; color:#10b981;"><?= '₱ '.number_format($r['sale_total'], 2); ?></td>
                     <td>
                         <button type="button" class="btn btn-info btn-xs print-receipt" data-sale-id="<?= $r['sale_id']; ?>">
                            <i class="fa fa-print"></i> Print
@@ -58,7 +60,7 @@ if(isset($_POST['date'])){
                 <tr>
                     <td colspan="4"></td>
                     <td align="right"><strong style="color:#94a3b8;">TOTAL:</strong></td>
-                    <td align="center"><strong style="color:#818cf8; font-size:15px;"><?= '₱ '.number_format($total,2); ?></strong></td>
+                    <td align="center"><strong style="color:#10b981; font-size:15px;"><?= '₱ '.number_format($total,2); ?></strong></td>
                     <td></td>
                 </tr>
             </tfoot>
@@ -66,7 +68,6 @@ if(isset($_POST['date'])){
 </div>
 
 
-<!-- for the datatable of employee -->
 <script type="text/javascript">
     window.selectedReportIds = [];
     $(document).ready(function() {
@@ -115,9 +116,4 @@ if(isset($_POST['date'])){
     });
 </script>
 
-
-
-<?php
-}//end isset
-
-
+<?php $db->Disconnect(); ?>
