@@ -231,5 +231,5 @@ $(document).on('click', '.toggle-password', function() {
 	var pwInput = $(target);
 	var type = pwInput.attr('type') === 'password' ? 'text' : 'password';
 	pwInput.attr('type', type);
-	$(this).text(type === 'password' ? '👁️' : '🔒');
+	$(this).html(type === 'password' ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>');
 });

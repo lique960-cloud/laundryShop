@@ -21,6 +21,7 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
   <title>Login — HypeLaundry Sales & Inventory</title>
   <meta name="description" content="HypeLaundry Sales & Inventory Management System - Secure Admin Portal">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/font-awesome.css">
   <style>
     *,
     *::before,
@@ -272,9 +273,9 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       position: fixed;
       top: 24px;
       right: 24px;
-      background: #0f172a;
+      background: #1e293b;
       color: #fff;
-      padding: 16px 24px;
+      padding: 14px 20px;
       border-radius: 12px;
       font-size: 14px;
       font-weight: 500;
@@ -282,6 +283,10 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 9999;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid rgba(239, 68, 68, 0.2);
     }
 
     .toast-error.show {
@@ -325,7 +330,7 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       <div class="login-header">
         <h2>Welcome Back!</h2>
         <p>Sign in to manage sales & inventory</p>
-        <div class="role-badge">🔒 Admin & Cashier Access Only</div>
+        <div class="role-badge"><i class="fa fa-lock" style="margin-right:5px;"></i>Admin & Cashier Access Only</div>
       </div>
 
       <form method="post" id="form-login">
@@ -338,7 +343,7 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
           <label for="password">Password</label>
           <div class="input-wrapper">
             <input type="password" id="password" name="pw" class="form-input" placeholder="Enter your password" value="<?php echo $remPass; ?>" required>
-            <span class="toggle-password" id="toggle-password">👁️</span>
+            <span class="toggle-password" id="toggle-password"><i class="fa fa-eye"></i></span>
           </div>
         </div>
 
@@ -359,11 +364,11 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
         <img src="dist/img/logobrand.png" alt="Logo" class="logo-large">
         <h1>Sales & Inventory <span>Management System</span></h1>
         <div class="branding-features">
-          <div class="feature-tag">📦 Inventory Tracking</div>
-          <div class="feature-tag">💰 Sales & POS</div>
-          <div class="feature-tag">📊 Reports</div>
-          <div class="feature-tag">🔔 Low Stock Alerts</div>
-          <div class="feature-tag">📋 Audit Logs</div>
+          <div class="feature-tag"><i class="fa fa-cube" style="margin-right:5px;"></i>Inventory Tracking</div>
+          <div class="feature-tag"><i class="fa fa-money" style="margin-right:5px;"></i>Sales & POS</div>
+          <div class="feature-tag"><i class="fa fa-bar-chart" style="margin-right:5px;"></i>Reports</div>
+          <div class="feature-tag"><i class="fa fa-bell" style="margin-right:5px;"></i>Low Stock Alerts</div>
+          <div class="feature-tag"><i class="fa fa-list-alt" style="margin-right:5px;"></i>Audit Logs</div>
         </div>
       </div>
     </div>
@@ -377,6 +382,11 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       var un = $('#credential').val();
       var pw = $('#password').val();
       var rm = $('#remember_me').is(':checked') ? 1 : 0;
+
+      if (un.includes(' ') || pw.includes(' ')) {
+        showToast("Spaces are not allowed in usernames or passwords.");
+        return;
+      }
 
       $('#btn-login').prop('disabled', true).text('Signing in...');
 
@@ -393,7 +403,7 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
           if (data.valid) {
             window.location = data.url;
           } else {
-            showToast(data.msg || "Invalid credentials.");
+            showToast("The password you entered is incorrect.");
             $('#btn-login').prop('disabled', false).text('Sign In');
           }
         },
@@ -406,7 +416,7 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
 
     function showToast(msg) {
       const toast = $('#toast-error');
-      toast.text(msg).addClass('show');
+      toast.html('<i class="fa fa-exclamation-circle" style="font-size:16px;"></i><span>' + msg + '</span>').addClass('show');
       setTimeout(() => {
         toast.removeClass('show');
       }, 4000);
@@ -416,7 +426,7 @@ $remCheck = isset($_COOKIE['remember_user']) ? 'checked' : '';
       const input = $('#password');
       const type = input.attr('type') === 'password' ? 'text' : 'password';
       input.attr('type', type);
-      $(this).text(type === 'password' ? '👁️' : '🔒');
+      $(this).html(type === 'password' ? '<i class="fa fa-eye"></i>' : '<i class="fa fa-eye-slash"></i>');
     });
   </script>
 </body>

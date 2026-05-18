@@ -31,24 +31,47 @@ $userRole = isset($_SESSION['user_role']) ? strtolower($_SESSION['user_role']) :
       }
       
       /* Completely redesign pagination to be flat and clean */
-      .dataTables_wrapper .dataTables_paginate .paginate_button,
-      .pagination > li > a, 
-      .pagination > li > span {
-        background: transparent !important;
-        color: #94a3b8 !important;
-        border: none !important;
-        padding: 6px 14px !important;
-        margin: 0 2px !important;
-        transition: all 0.3s ease !important;
-        cursor: pointer !important;
-        border-radius: 4px !important;
+      .dataTables_wrapper .dataTables_paginate {
+        display: flex !important;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 4px;
+        margin-top: 15px;
       }
       
-      .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+      .pagination {
+        display: flex !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        list-style: none !important;
+        gap: 4px;
+      }
+      
+      .dataTables_wrapper .dataTables_paginate .paginate_button:not(li),
+      .pagination > li > a, 
+      .pagination > li > span {
+        background: #1a2332 !important;
+        color: #94a3b8 !important;
+        border: 1px solid rgba(148, 163, 184, 0.1) !important;
+        padding: 6px 12px !important;
+        border-radius: 4px !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        min-width: 32px;
+        height: 32px;
+        text-decoration: none !important;
+        font-size: 13px;
+      }
+      
+      .dataTables_wrapper .dataTables_paginate .paginate_button:not(li):hover,
       .pagination > li > a:hover,
       .pagination > li > span:hover {
         background: rgba(99, 102, 241, 0.1) !important;
         color: #818cf8 !important;
+        border-color: rgba(99, 102, 241, 0.3) !important;
       }
       
       .dataTables_wrapper .dataTables_paginate .paginate_button.current,
@@ -56,6 +79,8 @@ $userRole = isset($_SESSION['user_role']) ? strtolower($_SESSION['user_role']) :
       .pagination > .active > span {
         background: #6366f1 !important;
         color: #fff !important;
+        border-color: #6366f1 !important;
+        font-weight: 600;
       }
       
       .dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
@@ -64,7 +89,15 @@ $userRole = isset($_SESSION['user_role']) ? strtolower($_SESSION['user_role']) :
         color: #475569 !important;
         cursor: default !important;
         background: transparent !important;
+        border-color: transparent !important;
         opacity: 0.5 !important;
+      }
+      
+      .pagination > li {
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       
       /* Fix select dropdown */
@@ -83,7 +116,7 @@ $userRole = isset($_SESSION['user_role']) ? strtolower($_SESSION['user_role']) :
       <header class="main-header">
         <a href="home.php" class="logo">
           <span class="logo-mini"><b>H</b>L</span>
-          <span class="logo-lg">📦 <b>Hype</b>Laundry</span>
+          <span class="logo-lg"><i class="fa fa-cube" style="margin-right:5px;"></i><b>Hype</b>Laundry</span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
           <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -180,7 +213,9 @@ $userRole = isset($_SESSION['user_role']) ? strtolower($_SESSION['user_role']) :
           $('#table-transactions').html(data);
           $('#myTable-txn').DataTable({
             columnDefs: [{ orderable: false, targets: [0, 7] }],
-            order: [[5, 'desc']]
+            order: [[5, 'desc']],
+            pageLength: 5,
+            pagingType: "simple_numbers"
           });
         },
         error: function() { 

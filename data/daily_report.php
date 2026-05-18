@@ -21,31 +21,46 @@ foreach($reports as $r) { $total += $r['sale_total']; }
         Selected <strong id="selected-count">0</strong> receipt(s) &middot; Total: <strong id="selected-total">₱ 0.00</strong>
     <?php endif; ?>
 </div>
+
+<style>
+    #myTable-report th, #myTable-report td {
+        padding: 12px 16px !important;
+        vertical-align: middle !important;
+    }
+    #myTable-report th {
+        color: #94a3b8;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .text-center { text-align: center !important; }
+    .text-right { text-align: right !important; }
+    .text-left { text-align: left !important; }
+</style>
+
 <div class="table-responsive">
         <table id="myTable-report" class="table table-bordered table-hover table-striped">
             <thead>
                 <tr>
-                    <th style="width:40px;"><input type="checkbox" id="select-all-report"></th>
+                    <th style="width:40px;" class="text-center"><input type="checkbox" id="select-all-report"></th>
                     <th>Reference</th>
                     <th>Customer Name</th>
-                    <th><center>Payment</center></th>
-                    <th><center>Date</center></th>
-                    <th><center>Amount</center></th>
-                    <th style="width:100px;"><center>Action</center></th>
+                    <th class="text-center">Payment</th>
+                    <th class="text-center">Date</th>
+                    <th class="text-right">Amount</th>
+                    <th style="width:120px;" class="text-center">Action</th>
                 </tr>
             </thead>
             <tbody>
-            	<?php 
-			    foreach($reports as $r): 
-			?>
-                <tr align="center">
-                    <td><input type="checkbox" class="select-report" value="<?= $r['sale_id']; ?>" data-amount="<?= $r['sale_total']; ?>"></td>
+            	<?php foreach($reports as $r): ?>
+                <tr>
+                    <td class="text-center"><input type="checkbox" class="select-report" value="<?= $r['sale_id']; ?>" data-amount="<?= $r['sale_total']; ?>"></td>
                     <td><span style="font-family:monospace; color:#818cf8; font-weight:600; font-size:12px;"><?= $r['sale_reference']; ?></span></td>
-                    <td align="left" style="font-weight:500;"><?= htmlspecialchars($r['sale_customer_name']); ?></td>
-                    <td><span style="background:rgba(99,102,241,0.15); color:#818cf8; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:600;"><?= $r['sale_payment_method']; ?></span></td>
-                    <td style="font-size:12.5px; color:#94a3b8;"><?= date('M d, Y h:i A', strtotime($r['sale_date'])); ?></td>
-                    <td style="font-weight:600; color:#10b981;"><?= '₱ '.number_format($r['sale_total'], 2); ?></td>
-                    <td>
+                    <td style="font-weight:500;"><?= htmlspecialchars($r['sale_customer_name']); ?></td>
+                    <td class="text-center"><span style="background:rgba(99,102,241,0.15); color:#818cf8; padding:4px 10px; border-radius:20px; font-size:12px; font-weight:600;"><?= $r['sale_payment_method']; ?></span></td>
+                    <td class="text-center" style="font-size:12.5px; color:#94a3b8;"><?= date('M d, Y h:i A', strtotime($r['sale_date'])); ?></td>
+                    <td class="text-right" style="font-weight:600; color:#10b981;"><?= '₱ '.number_format($r['sale_total'], 2); ?></td>
+                    <td class="text-center">
                         <button type="button" class="btn btn-info btn-xs print-receipt" data-sale-id="<?= $r['sale_id']; ?>">
                            <i class="fa fa-print"></i> Print
                         </button>
@@ -60,13 +75,12 @@ foreach($reports as $r) { $total += $r['sale_total']; }
                 <tr>
                     <td colspan="4"></td>
                     <td align="right"><strong style="color:#94a3b8;">TOTAL:</strong></td>
-                    <td align="center"><strong style="color:#10b981; font-size:15px;"><?= '₱ '.number_format($total,2); ?></strong></td>
+                    <td class="text-right"><strong style="color:#10b981; font-size:15px;"><?= '₱ '.number_format($total,2); ?></strong></td>
                     <td></td>
                 </tr>
             </tfoot>
         </table>
 </div>
-
 
 <script type="text/javascript">
     window.selectedReportIds = [];

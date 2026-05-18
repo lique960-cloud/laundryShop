@@ -13,7 +13,7 @@
 				    <div class="col-sm-9">
 				      <div class="input-wrapper">
 				        <input type="password" class="form-control has-toggle" id="pwd" placeholder="Enter new password" required="">
-				        <span class="toggle-password" data-target="#pwd">👁️</span>
+				        <span class="toggle-password" data-target="#pwd"><i class="fa fa-eye"></i></span>
 				      </div>
 				    </div>
 				  </div>
@@ -22,7 +22,7 @@
 				    <div class="col-sm-9"> 
 				      <div class="input-wrapper">
 				        <input type="password" class="form-control has-toggle" id="pwd2" placeholder="Confirm new password" required="">
-				        <span class="toggle-password" data-target="#pwd2">👁️</span>
+				        <span class="toggle-password" data-target="#pwd2"><i class="fa fa-eye"></i></span>
 				      </div>
 				    </div>
 				  </div>

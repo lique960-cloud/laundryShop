@@ -155,7 +155,7 @@ $db->Disconnect();
       <header class="main-header">
         <a href="home.php" class="logo">
           <span class="logo-mini"><b>H</b>L</span>
-          <span class="logo-lg">📦 <b>Hype</b>Laundry</span>
+          <span class="logo-lg"><i class="fa fa-cube" style="margin-right:5px;"></i><b>Hype</b>Laundry</span>
         </a>
         <nav class="navbar navbar-static-top" role="navigation">
           <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
@@ -199,7 +199,7 @@ $db->Disconnect();
               </div>
             </a>
             <a href="transactions.php" class="mini-stat-card" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:18px;">
-              <div class="mini-stat-icon" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;"><i class="fa fa-receipt"></i></div>
+              <div class="mini-stat-icon" style="background: rgba(14, 165, 233, 0.1); color: #0ea5e9;"><i class="fa fa-list-alt"></i></div>
               <div class="mini-stat-info">
                 <div class="value"><?= $totalTransactions['cnt'] ?? 0; ?></div>
                 <div class="label">Transactions</div>

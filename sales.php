@@ -31,12 +31,12 @@ $db->Disconnect();
       .pos-products { flex: 1; min-width: 0; }
       .pos-cart { width: 380px; flex-shrink: 0; }
       
-      .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+      .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
       .product-card {
         background: var(--bg-card);
         border: 1px solid var(--border-color);
         border-radius: 12px;
-        padding: 16px;
+        padding: 12px;
         cursor: pointer;
         transition: all 0.25s ease;
         position: relative;
@@ -52,21 +52,20 @@ $db->Disconnect();
         pointer-events: none;
       }
       .product-card .p-name {
-        font-size: 13.5px;
+        font-size: 13px;
         font-weight: 600;
         color: #f1f5f9;
-        margin-bottom: 6px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+        margin-bottom: 4px;
+        line-height: 1.3;
+        white-space: normal;
       }
       .product-card .p-category {
         font-size: 11px;
         color: #64748b;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
       }
       .product-card .p-price {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 700;
         color: #10b981;
       }
@@ -490,7 +489,7 @@ $db->Disconnect();
       var type = $(el).data('type') || 'product';
       
       if (type === 'service') {
-        var existingService = cart.find(function(c) { return c.type === 'service'; });
+        var existingService = cart.find(function(c) { return c.id !== id && c.type === 'service'; });
         if (existingService) {
           alert('Only one laundry service can be added to the cart at a time.');
           return;
@@ -510,6 +509,10 @@ $db->Disconnect();
           alert('Cannot exceed available stock (' + stock + ' ' + unit + ')');
           return;
         }
+        if (type === 'service' && existing.qty >= 20) {
+          alert('Maximum quantity for services is 20.');
+          return;
+        }
         existing.qty++;
       } else {
         cart.push({ id: id, name: name, price: price, stock: stock, unit: unit, qty: 1, type: type });
@@ -526,8 +529,8 @@ $db->Disconnect();
       var item = cart.find(function(c) { return c.id === id && c.type === type; });
       if (!item) return;
       
-      if (type === 'service' && delta > 0) {
-        alert('Quantity for services is limited to 1.');
+      if (type === 'service' && delta > 0 && item.qty >= 20) {
+        alert('Maximum quantity for services is 20.');
         return;
       }
       
@@ -557,16 +560,12 @@ $db->Disconnect();
           var qtyControls = '';
           var priceText = '₱' + item.price.toFixed(2);
           
-          if (item.type === 'product') {
-            priceText += ' × ' + item.qty;
-            qtyControls = '<div class="ci-qty">' +
-              '<button onclick="changeQty(' + item.id + ', \'' + item.type + '\', -1)">−</button>' +
-              '<span>' + item.qty + '</span>' +
-              '<button onclick="changeQty(' + item.id + ', \'' + item.type + '\', 1)">+</button>' +
-              '</div>';
-          } else {
-            qtyControls = '<div class="ci-qty"></div>';
-          }
+          priceText += ' × ' + item.qty;
+          qtyControls = '<div class="ci-qty">' +
+            '<button onclick="changeQty(' + item.id + ', \'' + item.type + '\', -1)">−</button>' +
+            '<span>' + item.qty + '</span>' +
+            '<button onclick="changeQty(' + item.id + ', \'' + item.type + '\', 1)">+</button>' +
+            '</div>';
 
           html += '<div class="cart-item">' +
             '<div class="ci-info"><div class="ci-name">' + item.name + '</div><div class="ci-price">' + priceText + '</div></div>' +

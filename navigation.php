@@ -22,7 +22,7 @@
 
     <li class="treeview <?= $currentPage == 'transactions.php' ? 'active' : ''; ?>">
       <a href="transactions.php">
-        <i class="fa fa-receipt" style="color: #0ea5e9;"></i>
+        <i class="fa fa-list-alt" style="color: #0ea5e9;"></i>
         <span>Transactions</span>
       </a>
     </li>
